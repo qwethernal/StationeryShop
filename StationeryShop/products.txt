@@ -1,0 +1,2 @@
+Product{name='pen', price=20.0, quantitySold=0}
+Product{name='tsirkull', price=20.0, quantitySold=0}

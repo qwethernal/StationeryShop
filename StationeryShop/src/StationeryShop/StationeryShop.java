@@ -1,6 +1,8 @@
 package StationeryShop;
-
-
+        
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 import entities.Product;
@@ -11,49 +13,50 @@ import managers.CustomerManager;
 public class StationeryShop {
     private ProductManager productManager = new ProductManager();
     private CustomerManager customerManager = new CustomerManager();
+    private static final String FILE_PATH = "data.txt"; 
 
     public static void main(String[] args) {
         StationeryShop shop = new StationeryShop();
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
-
         while (running) {
-            System.out.println("Viborite optsiyu:");
-            System.out.println("1. Dobavit' tovar");
-            System.out.println("2. Dobavit' klienta");
-            System.out.println("3. Prodat' tovar");
-            System.out.println("4. Vivesti spisok tovarov");
-            System.out.println("5. Vivesti spisok klientov");
-            System.out.println("6. Popolnit' balans klienta");
-            System.out.println("7. Vivesti obshchuyu vyru4ku");
-            System.out.println("8. Polu4it' kolichestvo prodaj tovara");
-            System.out.println("9. Polu4it' spisok klientov s opredelenim balansom");
-            System.out.println("10. Vykhod");
+            System.out.println("Choose an option:");
+            System.out.println("1. Add a product");
+            System.out.println("2. Add a customer");
+            System.out.println("3. Sell a product");
+            System.out.println("4. Display the list of products");
+            System.out.println("5. Display the list of customers");
+            System.out.println("6. Replenish customer balance");
+            System.out.println("7. Display total revenue");
+            System.out.println("8. Get the quantity of product sales");
+            System.out.println("9. Get the list of customers with a certain balance");
+            System.out.println("10. Exit");
+            System.out.println("11. Save data to a files");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // S4ityvaem simvol novoy stroki
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    System.out.print("Vvedite nazvanie tovara: ");
+                    System.out.print("Enter the product name: ");
                     String productName = scanner.nextLine();
-                    System.out.print("Vvedite cenu tovara: ");
+                    System.out.print("Enter the product price: ");
                     double price = scanner.nextDouble();
                     shop.productManager.addProduct(productName, price);
                     break;
                 case 2:
-                    System.out.print("Vvedite imya klienta: ");
+                    System.out.print("Enter the customer name: ");
                     String customerName = scanner.nextLine();
-                    System.out.print("Vvedite nachal'nyj balans: ");
+                    System.out.print("Enter the initial balance: ");
                     double balance = scanner.nextDouble();
                     shop.customerManager.addCustomer(customerName, balance);
                     break;
                 case 3:
-                    System.out.print("Vvedite imya klienta: ");
+                    System.out.print("Enter the customer name: ");
                     String sellCustomerName = scanner.nextLine();
-                    System.out.print("Vvedite nazvanie tovara: ");
+                    System.out.print("Enter the product name: ");
                     String sellProductName = scanner.nextLine();
-                    System.out.print("Vvedite kolichestvo: ");
+                    System.out.print("Enter the quantity: ");
                     int quantity = scanner.nextInt();
 
                     Product productToSell = shop.productManager.getProductByName(sellProductName);
@@ -64,82 +67,96 @@ public class StationeryShop {
                         if (customerForSale.getBalance() >= totalPrice) {
                             customerForSale.deductFunds(totalPrice);
                             productToSell.increaseQuantitySold(quantity);
-                            System.out.println("Prodazha proshla uspeshno. Itogovaya summa: $" + totalPrice);
+                            System.out.println("Sale successful. Total amount: $" + totalPrice);
                         } else {
-                            System.out.println("Nedostatochno sredstv dlya pokupki.");
+                            System.out.println("Insufficient funds for the purchase.");
                         }
                     } else {
-                        System.out.println("Tovar ili klient ne nayden.");
+                        System.out.println("Product or customer not found.");
                     }
                     break;
 
                 case 4:
                     List<Product> productList = shop.productManager.getAllProducts();
                     if (!productList.isEmpty()) {
-                        System.out.println("Spisok tovarov:");
+                        System.out.println("List of products:");
                         for (Product prod : productList) {
-                            System.out.println("Nazvanie: " + prod.getName() + ", Cena: $" + prod.getPrice());
+                            System.out.println("Name: " + prod.getName() + ", Price: $" + prod.getPrice());
                         }
                     } else {
-                        System.out.println("Tovary ne naydeny.");
+                        System.out.println("Products not found.");
                     }
                     break;
 
                 case 5:
                     List<Customer> customers = shop.customerManager.getAllCustomers();
                     if (!customers.isEmpty()) {
-                        System.out.println("Spisok klientov:");
+                        System.out.println("List of customers:");
                         for (Customer customer : customers) {
-                            System.out.println("Imya: " + customer.getName() + ", Balans: $" + customer.getBalance());
+                            System.out.println("Name: " + customer.getName() + ", Balance: $" + customer.getBalance());
                         }
                     } else {
-                        System.out.println("Klienty ne naydeny.");
+                        System.out.println("Customers not found.");
                     }
                     break;
 
                 case 6:
-                    System.out.print("Vvedite imya klienta: ");
+                    System.out.print("Enter the customer name: ");
                     String name = scanner.nextLine();
-                    System.out.print("Vvedite summu dlya popolneniya: ");
+                    System.out.print("Enter the amount for replenishment: ");
                     double amount = scanner.nextDouble();
                     shop.customerManager.addFundsToCustomer(name, amount);
                     break;
                 case 7:
                     double totalRevenue = shop.productManager.calculateTotalRevenue();
-                    System.out.println("Obshchaya vyru4ka: $" + totalRevenue);
+                    System.out.println("Total revenue: $" + totalRevenue);
                     break;
 
                 case 8:
-                    System.out.print("Vvedite nazvanie tovara dlya polucheniya kolichestva prodaj: ");
+                    System.out.print("Enter the product name to get the quantity of sales: ");
                     String prodName = scanner.nextLine();
                     int salesCount = shop.productManager.getProductSales(prodName);
                     if (salesCount >= 0) {
-                        System.out.println("Kolichestvo prodaj dlya " + prodName + ": " + salesCount);
+                        System.out.println("Quantity of sales for " + prodName + ": " + salesCount);
                     } else {
-                        System.out.println("Tovar ne nayden.");
+                        System.out.println("Product not found.");
                     }
                     break;
                 case 9:
-                    System.out.print("Vvedite summu balansa: ");
+                    System.out.print("Enter the balance amount: ");
                     double minAmount = scanner.nextDouble();
                     List<Customer> highSpendingCustomers = shop.customerManager.getCustomersWithHighPurchase(minAmount);
                     if (!highSpendingCustomers.isEmpty()) {
-                        System.out.println("Klienty,balans kotorix ili bolshe $" + minAmount + ":");
+                        System.out.println("Customers with a balance of $" + minAmount + " or more:");
                         for (Customer customer : highSpendingCustomers) {
-                            System.out.println(customer.getName() + " - Balans: $" + customer.getBalance());
+                            System.out.println(customer.getName() + " - Balance: $" + customer.getBalance());
                         }
                     } else {
-                        System.out.println("Klienty s balansom bolee $" + minAmount + " ne naydeny");
+                        System.out.println("Customers with a balance of more than $" + minAmount + " not found");
                     }
                     break;
                 case 10:
                     running = false;
                     break;
-                default:
-                    System.out.println("Nevernyj vybor. Poprobujte eshche raz.");
+                case 11:
+                    writeDataToFile(shop.productManager.getAllProducts(), "products.txt");
+                    writeDataToFile(shop.customerManager.getAllCustomers(), "customers.txt");
+                    System.out.println("Data is saved to txt.");
+                    break;
             }
         }
         scanner.close();
-        System.out.println("Zavershenie programmy.");
+        System.out.println("App ending.");
+    }
+
+    private static void writeDataToFile(List<? extends Object> dataList, String filePath) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (Object data : dataList) {
+                writer.write(data.toString());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

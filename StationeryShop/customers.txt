@@ -1,0 +1,2 @@
+Customer{name='artjom', balance=10.0}
+Customer{name='nikita', balance=30.0}

@@ -24,4 +24,9 @@ public class Customer {
     public void deductFunds(double amount) {
         this.balance -= amount;
     }
+
+    @Override
+    public String toString() {
+        return "Customer{name='" + name + "', balance=" + balance + '}';
+    }
 }

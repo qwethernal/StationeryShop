@@ -26,4 +26,9 @@ public class Product {
     public void increaseQuantitySold(int quantity) {
         this.quantitySold += quantity;
     }
+
+    @Override
+    public String toString() {
+        return "Product{name='" + name + "', price=" + price + ", quantitySold=" + quantitySold + '}';
+    }
 }
